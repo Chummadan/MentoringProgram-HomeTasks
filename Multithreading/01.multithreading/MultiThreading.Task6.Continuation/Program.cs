@@ -7,6 +7,8 @@
    Demonstrate the work of the each case with console utility.
 */
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MultiThreading.Task6.Continuation
 {
@@ -22,7 +24,57 @@ namespace MultiThreading.Task6.Continuation
             Console.WriteLine("Demonstrate the work of the each case with console utility.");
             Console.WriteLine();
 
-            // feel free to add your code
+            #region a, b, c implementations
+
+            var antecedentCaseABC = Task.Run(() =>
+            {
+                Console.WriteLine("Antecedent task started.");
+                throw new Exception("Parent Task failed.");
+            });
+
+            antecedentCaseABC.ContinueWith(task =>
+            {
+                Console.WriteLine("Executed regardless of the result of the parent task.");
+            });
+
+            antecedentCaseABC.ContinueWith(task =>
+            {
+                if (!task.IsCompletedSuccessfully)
+                    Console.WriteLine("Executed when the parent task finished without success.");
+            });
+
+            antecedentCaseABC.ContinueWith(task =>
+            {
+                if (task.IsFaulted)
+                    Console.WriteLine("Executed when the parent task finished with fail and reused parent task thread.\n" +
+                        $"Parent ex.message: {antecedentCaseABC.Exception.Message}");
+            }, TaskContinuationOptions.ExecuteSynchronously);
+
+            #endregion
+
+            #region d implementation
+
+            var tokenSource = new CancellationTokenSource();
+            var cancellationToken = tokenSource.Token;
+
+            var antecedentCaseD = Task.Run(() =>
+            {
+                Console.WriteLine("Antecedent task started.");
+                cancellationToken.ThrowIfCancellationRequested();
+            }, cancellationToken);
+
+            tokenSource.Cancel();
+
+            antecedentCaseD.ContinueWith(task =>
+            {
+                if (task.IsCanceled)
+                {
+                    Console.WriteLine("Executed outside of the thread pool when the parent task was canceled.\n" +
+                        $"IsThreadPoolThread: {Thread.CurrentThread.IsThreadPoolThread}");
+                }
+            }, TaskContinuationOptions.LongRunning);
+
+            #endregion
 
             Console.ReadLine();
         }

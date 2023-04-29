@@ -11,7 +11,7 @@ namespace ProcessingService
             var connection = factory.CreateConnection();
             var channel = connection.CreateModel();
 
-            channel.QueueDeclare("pdfQueue", true, false, false);
+            channel.QueueDeclare("pdfQueue", true, false, true);
             channel.QueueBind("pdfQueue", "pdfExchange", "pdf.created");
 
             var consumer = new EventingBasicConsumer(channel);

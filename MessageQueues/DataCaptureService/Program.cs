@@ -4,6 +4,8 @@ namespace DataCaptureService
 {
     internal class Program
     {
+        const int ReadFileRetryAttempts = 10;
+
         static void Main(string[] args)
         {
             var factory = new ConnectionFactory() { HostName = "localhost" };
@@ -19,11 +21,9 @@ namespace DataCaptureService
             {
                 try
                 {
-                    //var body = File.ReadAllBytes(e.FullPath);
-                    //channel.BasicPublish(exchange: "pdfExchange", routingKey: "pdf.created", null, body);
                     var readTask = Task.Factory.StartNew(() =>
                     {
-                        using var stream = new FileStream(e.FullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                        using var stream = WaitForFile(e.FullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 
                         byte[] buffer = new byte[stream.Length];
                         stream.Read(buffer);
@@ -47,6 +47,26 @@ namespace DataCaptureService
 
             channel.Close();
             connection.Close();
+        }
+
+        static FileStream WaitForFile(string fullPath, FileMode mode, FileAccess access, FileShare share)
+        {
+            for (int numTries = 0; numTries < ReadFileRetryAttempts; numTries++)
+            {
+                FileStream? stream = null;
+                try
+                {
+                    stream = new FileStream(fullPath, mode, access, share);
+                    return stream;
+                }
+                catch (IOException)
+                {
+                    stream?.Dispose();
+                    Thread.Sleep(50);
+                }
+            }
+
+            return null;
         }
     }
 }

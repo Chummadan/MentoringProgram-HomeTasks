@@ -14,8 +14,7 @@ namespace DataCaptureService
 
             channel.ExchangeDeclare("pdfExchange", ExchangeType.Direct, true);
 
-            var watchFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestFiles");
-            using var watcher = new FileSystemWatcher(watchFolder, "*.pdf");
+            using var watcher = new FileSystemWatcher(GetWatchDirectoryPath(), "*.pdf");
             watcher.EnableRaisingEvents = true;
             watcher.Created += (sender, e) =>
             {
@@ -23,7 +22,7 @@ namespace DataCaptureService
                 {
                     var readTask = Task.Factory.StartNew(() =>
                     {
-                        using var stream = WaitForFile(e.FullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                        using var stream = SafeOpenFileStream(e.FullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 
                         byte[] buffer = new byte[stream.Length];
                         stream.Read(buffer);
@@ -49,7 +48,7 @@ namespace DataCaptureService
             connection.Close();
         }
 
-        static FileStream WaitForFile(string fullPath, FileMode mode, FileAccess access, FileShare share)
+        static FileStream SafeOpenFileStream(string fullPath, FileMode mode, FileAccess access, FileShare share)
         {
             for (int numTries = 0; numTries < ReadFileRetryAttempts; numTries++)
             {
@@ -67,6 +66,16 @@ namespace DataCaptureService
             }
 
             return null;
+        }
+
+        static string GetWatchDirectoryPath()
+        {
+            var watchDirectoryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestFiles");
+
+            if (!Directory.Exists(watchDirectoryPath))
+                Directory.CreateDirectory(watchDirectoryPath);
+
+            return watchDirectoryPath;
         }
     }
 }

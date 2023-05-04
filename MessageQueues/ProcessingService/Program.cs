@@ -18,7 +18,7 @@ namespace ProcessingService
             consumer.Received += (sender, eventArgs) =>
             {
                 var fileName = Guid.NewGuid().ToString() + ".pdf";
-                var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Results", fileName);
+                var filePath = Path.Combine(GetWriteDirectoryPath(), fileName);
                 File.WriteAllBytes(filePath, eventArgs.Body.ToArray());
 
                 Console.WriteLine("Received and saved document {0} from data capture service", fileName);
@@ -29,6 +29,16 @@ namespace ProcessingService
 
             channel.Close();
             connection.Close();
+        }
+
+        static string GetWriteDirectoryPath()
+        {
+            var writeDirectoryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Results");
+
+            if (!Directory.Exists(writeDirectoryPath))
+                Directory.CreateDirectory(writeDirectoryPath);
+
+            return writeDirectoryPath;
         }
     }
 }

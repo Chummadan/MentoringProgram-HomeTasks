@@ -1,25 +1,28 @@
 ﻿using System.Security.Cryptography;
+using System.Text;
 
 namespace PasswordHashGenerator
 {
     public class Generator
     {
-        public string GeneratePasswordHashUsingSalt(string passwordText, byte[] salt)
-
+        public static string GeneratePasswordHashUsingSalt(string passwordText, byte[] salt)
         {
+            var hashLength = 20;
             var iterate = 10000;
 
             var pbkdf2 = new Rfc2898DeriveBytes(passwordText, salt, iterate);
 
-            byte[] hash = pbkdf2.GetBytes(20);
-            byte[] hashBytes = new byte[36];
+            byte[] hash = pbkdf2.GetBytes(hashLength);
+            pbkdf2.Dispose();
 
-            Array.Copy(salt, 0, hashBytes, 0, 16);
-            Array.Copy(hash, 0, hashBytes, 16, 20);
+            byte[] hashBytes = new byte[16 + hashLength];
 
-            var passwordHash = Convert.ToBase64String(hashBytes);
+            Buffer.BlockCopy(salt, 0, hashBytes, 0, 16);
+            Buffer.BlockCopy(hash, 0, hashBytes, 16, hashLength);
 
-            return passwordHash;
+            var passwordHashBuilder = new StringBuilder(Convert.ToBase64String(hashBytes), 64);
+
+            return passwordHashBuilder.ToString();
         }
     }
 }

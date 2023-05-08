@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.IO;
 using System.Linq;
-using System.Web;
+using System.Threading.Tasks;
 using System.Web.Mvc;
+
 using ProfileSample.DAL;
 using ProfileSample.Models;
 
@@ -11,26 +12,28 @@ namespace ProfileSample.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            var context = new ProfileSampleEntities();
-
-            var sources = context.ImgSources.Take(20).Select(x => x.Id);
-            
             var model = new List<ImageModel>();
 
-            foreach (var id in sources)
+            using (var context = new ProfileSampleEntities())
             {
-                var item = context.ImgSources.Find(id);
+                var sources = await context.ImgSources
+                    .Take(20)
+                    .Select(x => new { x.Name, x.Data })
+                    .ToListAsync();
 
-                var obj = new ImageModel()
+                foreach (var item in sources)
                 {
-                    Name = item.Name,
-                    Data = item.Data
-                };
+                    var obj = new ImageModel()
+                    {
+                        Name = item.Name,
+                        Data = item.Data
+                    };
 
-                model.Add(obj);
-            } 
+                    model.Add(obj);
+                }
+            };
 
             return View(model);
         }

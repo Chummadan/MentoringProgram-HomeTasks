@@ -72,12 +72,14 @@ namespace MyCalculatorv1
 				textBox.Text = textBox.Text + "=" + num2 * num3;
 				break;
 			}
-			default:
+			case "/":
 			{
 				TextBox textBox = tb;
 				textBox.Text = textBox.Text + "=" + num2 / num3;
 				break;
 			}
+			default:
+				break;
 			}
 		}
 

@@ -138,40 +138,39 @@ namespace GameOfLife
             {
                 for (int j = 0; j < SizeY; j++)
                 {
-//                    nextGenerationCells[i, j] = CalculateNextGeneration(i,j);          // UNOPTIMIZED
-                    CalculateNextGeneration(i, j, ref alive, ref age);   // OPTIMIZED
-                    nextGenerationCells[i, j].IsAlive = alive;  // OPTIMIZED
-                    nextGenerationCells[i, j].Age = age;  // OPTIMIZED
+                    nextGenerationCells[i, j] = CalculateNextGeneration(i,j);          // OPTIMIZED
+                    //CalculateNextGeneration(i, j, ref alive, ref age);   // OPTIMIZED
+                    //nextGenerationCells[i, j].IsAlive = alive;  // OPTIMIZED
+                    //nextGenerationCells[i, j].Age = age;  // OPTIMIZED
                 }
             }
             UpdateToNextGeneration();
         }
 
-        public Cell CalculateNextGeneration(int row, int column)    // UNOPTIMIZED
+        public Cell CalculateNextGeneration(int row, int column)    // OPTIMIZED
         {
-            bool alive;
-            int count, age;
+            var alive = cells[row, column].IsAlive;
+            var age = cells[row, column].Age;
 
-            alive = cells[row, column].IsAlive;
-            age = cells[row, column].Age;
-            count = CountNeighbors(row, column);
+            var count = CountNeighbors(row, column);
 
-            if (alive && count < 2)
-                return new Cell(row, column, 0, false);
-            
-            if (alive && (count == 2 || count == 3))
+            if (alive)
             {
-                cells[row, column].Age++;
-                return new Cell(row, column, cells[row, column].Age, true);
+                if (count < 2 || count > 3)
+                {
+                    alive = false;
+                    age = 0;
+                }
+                else
+                    age++;
+            }
+            else if (count == 3)
+            {
+                alive = true;
+                age = 0;
             }
 
-            if (alive && count > 3)
-                return new Cell(row, column, 0, false);
-            
-            if (!alive && count == 3)
-                return new Cell(row, column, 0, true);
-            
-            return new Cell(row, column, 0, false);
+            return new Cell(row, column, age, alive);
         }
 
         public void CalculateNextGeneration(int row, int column, ref bool isAlive, ref int age)     // OPTIMIZED

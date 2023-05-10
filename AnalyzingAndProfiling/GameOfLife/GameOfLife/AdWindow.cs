@@ -10,6 +10,7 @@ namespace GameOfLife
     class AdWindow : Window
     {
         private readonly DispatcherTimer adTimer;
+        private readonly ImageBrush myBrush;
         private int imgNmb;     // the number of the image currently shown
         private string link;    // the URL where the currently shown ad leads to
         
@@ -17,6 +18,7 @@ namespace GameOfLife
         public AdWindow(Window owner)
         {
             Random rnd = new Random();
+            myBrush = new ImageBrush();
             Owner = owner;
             Width = 350;
             Height = 100;
@@ -45,7 +47,7 @@ namespace GameOfLife
         
         protected override void OnClosed(EventArgs e)
         {
-            //Unsubscribe();
+            Unsubscribe();
             base.OnClosed(e);
         } 
 
@@ -56,34 +58,28 @@ namespace GameOfLife
 
         private void ChangeAds(object sender, EventArgs eventArgs)
         {
-            
-            ImageBrush myBrush = new ImageBrush();
-            
             switch (imgNmb)
             {
                 case 1:
                     myBrush.ImageSource =
                         new BitmapImage(new Uri("ad1.jpg", UriKind.Relative));
-                    Background = myBrush;
                     link = "http://example.com";
                     imgNmb++;
                     break;
                 case 2:
                     myBrush.ImageSource =
                         new BitmapImage(new Uri("ad2.jpg", UriKind.Relative));
-                    Background = myBrush;
                     link = "http://example.com";
                     imgNmb++;
                     break;
                 case 3:
                     myBrush.ImageSource =
                         new BitmapImage(new Uri("ad3.jpg", UriKind.Relative));
-                    Background = myBrush;
                     link = "http://example.com";
                     imgNmb = 1;
                     break;
             }
-            
+            Background = myBrush;
         }
     }
 }

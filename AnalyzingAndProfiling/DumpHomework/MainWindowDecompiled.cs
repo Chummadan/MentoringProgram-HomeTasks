@@ -33,6 +33,8 @@ namespace MyCalculatorv1
 		private void result()
 		{
 			int num = 0;
+			double num2 = 0;
+			double num3 = 0;
 			if (tb.Text.Contains("+"))
 			{
 				num = tb.Text.IndexOf("+");
@@ -50,8 +52,12 @@ namespace MyCalculatorv1
 				num = tb.Text.IndexOf("/");
 			}
 			string text = tb.Text.Substring(num, 1);
-			double num2 = Convert.ToDouble(tb.Text.Substring(0, num));
-			double num3 = Convert.ToDouble(tb.Text.Substring(num + 1, tb.Text.Length - num - 1));
+			if (!double.TryParse(tb.Text.Substring(0, num), num2) || 
+				!double.TryParse(tb.Text.Substring(num + 1, tb.Text.Length - num - 1), num3))
+				{
+					tb.Text = "Err";
+					return;
+				}
 			switch (text)
 			{
 			case "+":
@@ -74,6 +80,12 @@ namespace MyCalculatorv1
 			}
 			case "/":
 			{
+				if (num3 == 0)
+				{
+					tb.Text = "Err";
+					break;
+				}
+
 				TextBox textBox = tb;
 				textBox.Text = textBox.Text + "=" + num2 / num3;
 				break;

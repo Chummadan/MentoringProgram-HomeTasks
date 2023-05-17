@@ -41,27 +41,31 @@ namespace ProfileSample.Controllers
         public ActionResult Convert()
         {
             var files = Directory.GetFiles(Server.MapPath("~/Content/Img"), "*.jpg");
+            var images = new List<ImgSource>();
+
+            foreach (var file in files)
+            {
+                byte[] buff;
+
+                using (var stream = new FileStream(file, FileMode.Open))
+                {
+                    buff = new byte[stream.Length];
+                    stream.Read(buff, 0, (int)stream.Length);
+                }
+
+                var entity = new ImgSource()
+                {
+                    Name = Path.GetFileName(file),
+                    Data = buff,
+                };
+
+                images.Add(entity);
+            }
 
             using (var context = new ProfileSampleEntities())
             {
-                foreach (var file in files)
-                {
-                    using (var stream = new FileStream(file, FileMode.Open))
-                    {
-                        byte[] buff = new byte[stream.Length];
-
-                        stream.Read(buff, 0, (int) stream.Length);
-
-                        var entity = new ImgSource()
-                        {
-                            Name = Path.GetFileName(file),
-                            Data = buff,
-                        };
-
-                        context.ImgSources.Add(entity);
-                        context.SaveChanges();
-                    }
-                } 
+                context.ImgSources.AddRange(images);
+                context.SaveChanges();
             }
 
             return RedirectToAction("Index");

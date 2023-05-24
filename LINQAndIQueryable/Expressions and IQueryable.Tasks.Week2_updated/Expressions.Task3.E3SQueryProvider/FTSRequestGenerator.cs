@@ -34,15 +34,13 @@ namespace Expressions.Task3.E3SQueryProvider
 
             var ftsQueryRequest = new FtsQueryRequest
             {
-                Statements = new List<Statement>
-                {
-                    new Statement {
-                        Query = query
-                    }
-                },
+                Statements = new List<Statement>(),
                 Start = start,
                 Limit = limit
             };
+
+            foreach (var statementQuery in query.Split(","))
+                ftsQueryRequest.Statements.Add(new Statement { Query = statementQuery });
 
             var ftsQueryRequestString = JsonConvert.SerializeObject(ftsQueryRequest);
 

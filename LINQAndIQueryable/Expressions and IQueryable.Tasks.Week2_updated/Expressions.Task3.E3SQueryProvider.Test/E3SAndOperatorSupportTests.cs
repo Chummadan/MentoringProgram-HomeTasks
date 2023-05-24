@@ -34,8 +34,7 @@ namespace Expressions.Task3.E3SQueryProvider.Test
               ],
              */
 
-            // todo: create asserts for this test by yourself, because they will depend on your final implementation
-            throw new NotImplementedException("Please implement this test and the appropriate functionality");
+            Assert.Equal("Workstation:(EPRUIZHW006),Manager:(John*)", translator.Translate(expression));
         }
 
         #endregion

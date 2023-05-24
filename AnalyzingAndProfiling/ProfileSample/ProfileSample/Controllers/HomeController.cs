@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.IO;
 using System.Linq;
-using System.Web;
+using System.Threading.Tasks;
 using System.Web.Mvc;
+
 using ProfileSample.DAL;
 using ProfileSample.Models;
 
@@ -11,26 +12,28 @@ namespace ProfileSample.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            var context = new ProfileSampleEntities();
-
-            var sources = context.ImgSources.Take(20).Select(x => x.Id);
-            
             var model = new List<ImageModel>();
 
-            foreach (var id in sources)
+            using (var context = new ProfileSampleEntities())
             {
-                var item = context.ImgSources.Find(id);
+                var sources = await context.ImgSources
+                    .Take(20)
+                    .Select(x => new { x.Name, x.Data })
+                    .ToListAsync();
 
-                var obj = new ImageModel()
+                foreach (var item in sources)
                 {
-                    Name = item.Name,
-                    Data = item.Data
-                };
+                    var obj = new ImageModel()
+                    {
+                        Name = item.Name,
+                        Data = item.Data
+                    };
 
-                model.Add(obj);
-            } 
+                    model.Add(obj);
+                }
+            };
 
             return View(model);
         }
@@ -38,27 +41,31 @@ namespace ProfileSample.Controllers
         public ActionResult Convert()
         {
             var files = Directory.GetFiles(Server.MapPath("~/Content/Img"), "*.jpg");
+            var images = new List<ImgSource>();
+
+            foreach (var file in files)
+            {
+                byte[] buff;
+
+                using (var stream = new FileStream(file, FileMode.Open))
+                {
+                    buff = new byte[stream.Length];
+                    stream.Read(buff, 0, (int)stream.Length);
+                }
+
+                var entity = new ImgSource()
+                {
+                    Name = Path.GetFileName(file),
+                    Data = buff,
+                };
+
+                images.Add(entity);
+            }
 
             using (var context = new ProfileSampleEntities())
             {
-                foreach (var file in files)
-                {
-                    using (var stream = new FileStream(file, FileMode.Open))
-                    {
-                        byte[] buff = new byte[stream.Length];
-
-                        stream.Read(buff, 0, (int) stream.Length);
-
-                        var entity = new ImgSource()
-                        {
-                            Name = Path.GetFileName(file),
-                            Data = buff,
-                        };
-
-                        context.ImgSources.Add(entity);
-                        context.SaveChanges();
-                    }
-                } 
+                context.ImgSources.AddRange(images);
+                context.SaveChanges();
             }
 
             return RedirectToAction("Index");

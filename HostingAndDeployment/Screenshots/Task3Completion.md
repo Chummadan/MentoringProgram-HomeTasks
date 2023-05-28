@@ -1,13 +1,19 @@
 # Task 1: Deploy your ASP.Net Core application to your local IIS server.
 ## Step1:
-![alt text](https://raw.githubusercontent.com/Chummadan/MentoringProgram-HomeTasks/master/HostingAndDeployment/Screenshots/Task2_AzViaCLI/CreateResourceGroup.png)
+![alt text](https://raw.githubusercontent.com/Chummadan/MentoringProgram-HomeTasks/master/HostingAndDeployment/Screenshots/Task3_Docker/CreateDockerFile.png)
 ## Step2:
-![alt text](https://raw.githubusercontent.com/Chummadan/MentoringProgram-HomeTasks/master/HostingAndDeployment/Screenshots/Task2_AzViaCLI/CreateAppServicePlan.png)
+![alt text](https://raw.githubusercontent.com/Chummadan/MentoringProgram-HomeTasks/master/HostingAndDeployment/Screenshots/Task3_Docker/BuildImmage.png)
 ## Step3:
-![alt text](https://raw.githubusercontent.com/Chummadan/MentoringProgram-HomeTasks/master/HostingAndDeployment/Screenshots/Task2_AzViaCLI/CreateWebApp.png)
+![alt text](https://raw.githubusercontent.com/Chummadan/MentoringProgram-HomeTasks/master/HostingAndDeployment/Screenshots/Task3_Docker/RunContainer.png)
 ## Step4:
-![alt text](https://raw.githubusercontent.com/Chummadan/MentoringProgram-HomeTasks/master/HostingAndDeployment/Screenshots/Task2_AzViaCLI/DeployProject.png)
+![alt text](https://raw.githubusercontent.com/Chummadan/MentoringProgram-HomeTasks/master/HostingAndDeployment/Screenshots/Task3_Docker/RequestWebApi.png)
 ## Step5:
-![alt text](https://raw.githubusercontent.com/Chummadan/MentoringProgram-HomeTasks/master/HostingAndDeployment/Screenshots/Task2_AzViaCLI/CreatedResourceGroup.png)
+![alt text](https://raw.githubusercontent.com/Chummadan/MentoringProgram-HomeTasks/master/HostingAndDeployment/Screenshots/Task3_Docker/RebuildImmageAndPushToDockerHub.png)
 ## Step6:
-![alt text](https://raw.githubusercontent.com/Chummadan/MentoringProgram-HomeTasks/master/HostingAndDeployment/Screenshots/Task2_AzViaCLI/RequestToWebApi.png)
+![alt text](https://raw.githubusercontent.com/Chummadan/MentoringProgram-HomeTasks/master/HostingAndDeployment/Screenshots/Task3_Docker/CreateNewAppServicePlan.png)
+## Step7:
+![alt text](https://raw.githubusercontent.com/Chummadan/MentoringProgram-HomeTasks/master/HostingAndDeployment/Screenshots/Task3_Docker/CreateWebApp.png)
+## Step8:
+![alt text](https://raw.githubusercontent.com/Chummadan/MentoringProgram-HomeTasks/master/HostingAndDeployment/Screenshots/Task3_Docker/PublishDockerImageToAppService.png)
+## Step9:
+![alt text](https://raw.githubusercontent.com/Chummadan/MentoringProgram-HomeTasks/master/HostingAndDeployment/Screenshots/Task3_Docker/RequestToWebService.png)
